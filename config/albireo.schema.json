@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "node", "listen", "identity", "storage", "anchoring", "telemetry"],
+  "properties": {
+    "version": {"const": 1},
+    "node": {"type": "object", "additionalProperties": false, "required": ["id"], "properties": {"id": {"type": "string", "minLength": 8, "maxLength": 128}}},
+    "listen": {"type": "object", "additionalProperties": false, "required": ["udp", "health"], "properties": {"udp": {"type": "string"}, "health": {"type": "string"}}},
+    "identity": {"type": "object", "additionalProperties": false, "required": ["private_key_file", "peer_bundle_file"], "properties": {"private_key_file": {"type": "string", "pattern": "^/run/secrets/"}, "peer_bundle_file": {"type": "string", "pattern": "^/run/secrets/"}}},
+    "storage": {"type": "object", "additionalProperties": false, "required": ["path"], "properties": {"path": {"const": "/var/lib/albireo"}}},
+    "anchoring": {"type": "object", "additionalProperties": false, "required": ["enabled", "confirmations", "queue_limit"], "properties": {"enabled": {"type": "boolean"}, "chain_id": {"type": "string"}, "rpc_url": {"type": "string", "format": "uri"}, "rpc_credential_file": {"type": "string"}, "confirmations": {"type": "integer", "minimum": 1}, "queue_limit": {"type": "integer", "minimum": 1}}},
+    "telemetry": {"type": "object", "additionalProperties": false, "required": ["metrics_enabled"], "properties": {"metrics_enabled": {"type": "boolean"}}}
+  }
+}

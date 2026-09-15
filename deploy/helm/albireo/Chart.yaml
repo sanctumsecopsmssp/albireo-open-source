@@ -1,0 +1,6 @@
+apiVersion: v2
+name: albireo
+description: Security-first deployment contract for Albireo
+type: application
+version: 0.1.0
+appVersion: experimental

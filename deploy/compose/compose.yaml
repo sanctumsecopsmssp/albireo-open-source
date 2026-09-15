@@ -1,0 +1,35 @@
+services:
+  albireo:
+    image: ${ALBIREO_IMAGE:?set ALBIREO_IMAGE to an immutable image digest}
+    user: "65532:65532"
+    command: ["serve", "--config", "/etc/albireo/albireo.yaml"]
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=64m,uid=65532,gid=65532,mode=0700
+    ports:
+      - "${ALBIREO_BIND_IP:-127.0.0.1}:${ALBIREO_UDP_PORT:-9500}:9500/udp"
+      - "127.0.0.1:${ALBIREO_HEALTH_PORT:-8080}:8080/tcp"
+    volumes:
+      - ../../config/albireo.yaml:/etc/albireo/albireo.yaml:ro
+      - ./secrets:/run/secrets/albireo:ro
+      - albireo-data:/var/lib/albireo
+    healthcheck:
+      test: ["CMD", "albireo", "healthcheck", "--url", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options: {max-size: "10m", max-file: "5"}
+    networks: [albireo]
+networks:
+  albireo:
+    driver: bridge
+volumes:
+  albireo-data:

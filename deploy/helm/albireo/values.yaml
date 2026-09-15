@@ -1,0 +1,14 @@
+image:
+  repository: ""
+  digest: ""
+replicaCount: 2
+service:
+  udpPort: 9500
+healthPort: 8080
+secrets:
+  existingSecret: ""
+networkPolicy:
+  enabled: true
+resources:
+  requests: {cpu: 100m, memory: 128Mi}
+  limits: {cpu: "1", memory: 512Mi}

@@ -1,0 +1,20 @@
+version: 1
+node:
+  id: node-example-001
+listen:
+  udp: 0.0.0.0:9500
+  health: 0.0.0.0:8080
+identity:
+  private_key_file: /run/secrets/albireo/node.key
+  peer_bundle_file: /run/secrets/albireo/peers.bundle
+storage:
+  path: /var/lib/albireo
+anchoring:
+  enabled: false
+  chain_id: ""
+  rpc_url: https://rpc.example.invalid
+  rpc_credential_file: /run/secrets/albireo/rpc.token
+  confirmations: 12
+  queue_limit: 10000
+telemetry:
+  metrics_enabled: false

@@ -1,0 +1,1 @@
+Albireo deployment contract installed. Confirm the image digest is approved, the referenced Secret was created out of band, and explicit NetworkPolicy rules permit only reviewed peers. Check readiness before sending traffic.

@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: albireo
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: albireo
+  namespace: albireo
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: albireo-config
+  namespace: albireo
+data:
+  albireo.yaml: |
+    version: 1
+    node: {id: node-example-001}
+    listen: {udp: "0.0.0.0:9500", health: "0.0.0.0:8080"}
+    identity: {private_key_file: /run/secrets/albireo/node.key, peer_bundle_file: /run/secrets/albireo/peers.bundle}
+    storage: {path: /var/lib/albireo}
+    anchoring: {enabled: false, confirmations: 12, queue_limit: 10000}
+    telemetry: {metrics_enabled: false}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: albireo, namespace: albireo}
+spec:
+  replicas: 2
+  selector: {matchLabels: {app.kubernetes.io/name: albireo}}
+  template:
+    metadata: {labels: {app.kubernetes.io/name: albireo}}
+    spec:
+      serviceAccountName: albireo
+      automountServiceAccountToken: false
+      securityContext: {runAsNonRoot: true, runAsUser: 65532, runAsGroup: 65532, fsGroup: 65532, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: albireo
+          image: registry.example.invalid/albireo@sha256:0000000000000000000000000000000000000000000000000000000000000000
+          args: ["serve", "--config", "/etc/albireo/albireo.yaml"]
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: ["ALL"]}}
+          ports: [{name: peer, containerPort: 9500, protocol: UDP}, {name: health, containerPort: 8080, protocol: TCP}]
+          livenessProbe: {httpGet: {path: /health, port: health}, initialDelaySeconds: 20, periodSeconds: 30}
+          readinessProbe: {httpGet: {path: /ready, port: health}, initialDelaySeconds: 5, periodSeconds: 10}
+          resources: {requests: {cpu: 100m, memory: 128Mi}, limits: {cpu: "1", memory: 512Mi}}
+          volumeMounts: [{name: config, mountPath: /etc/albireo, readOnly: true}, {name: identity, mountPath: /run/secrets/albireo, readOnly: true}, {name: tmp, mountPath: /tmp}, {name: state, mountPath: /var/lib/albireo}]
+      volumes: [{name: config, configMap: {name: albireo-config}}, {name: identity, secret: {secretName: albireo-identity}}, {name: tmp, emptyDir: {medium: Memory, sizeLimit: 64Mi}}, {name: state, emptyDir: {sizeLimit: 1Gi}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: albireo, namespace: albireo}
+spec:
+  selector: {app.kubernetes.io/name: albireo}
+  ports: [{name: peer, port: 9500, targetPort: peer, protocol: UDP}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: albireo-default-deny, namespace: albireo}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+  egress:
+    - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}}]
+      ports: [{port: 53, protocol: UDP}, {port: 53, protocol: TCP}]
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata: {name: albireo, namespace: albireo}
+spec:
+  minAvailable: 1
+  selector: {matchLabels: {app.kubernetes.io/name: albireo}}

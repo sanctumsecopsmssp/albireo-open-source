@@ -1,0 +1,24 @@
+name: deployment-validate
+on:
+  pull_request:
+    paths: ["deploy/**", "config/**", "scripts/**", "docs/**", "Makefile", "README.md"]
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Validate deployment assets
+        shell: bash
+        run: |
+          chmod +x scripts/*.sh
+          ./scripts/validate.sh
+      - name: Validate Compose rendering
+        shell: bash
+        run: |
+          cp deploy/compose/.env.example deploy/compose/.env
+          cp config/albireo.example.yaml config/albireo.yaml
+          ALBIREO_IMAGE=registry.example.invalid/albireo@sha256:1111111111111111111111111111111111111111111111111111111111111111 docker compose --env-file deploy/compose/.env -f deploy/compose/compose.yaml config >/dev/null
