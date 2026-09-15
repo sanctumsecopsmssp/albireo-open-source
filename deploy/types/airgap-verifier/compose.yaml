@@ -1,0 +1,15 @@
+services:
+  verifier:
+    image: ${ALBIREO_IMAGE:?set ALBIREO_IMAGE to an immutable image digest}
+    user: "65532:65532"
+    command: ["verify", "--input", "/input", "--output", "/output", "--trust-bundle", "/trust/trust.bundle"]
+    network_mode: none
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp:rw,noexec,nosuid,nodev,size=64m,uid=65532,gid=65532,mode=0700]
+    volumes:
+      - ./input:/input:ro
+      - ./trust:/trust:ro
+      - ./output:/output:rw
+    restart: "no"

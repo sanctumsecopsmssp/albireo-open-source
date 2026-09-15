@@ -1,0 +1,5 @@
+services:
+  albireo:
+    command: ["serve", "--mode", "responder", "--config", "/etc/albireo/albireo.yaml"]
+    environment:
+      ALBIREO_INITIATION_POLICY: disabled

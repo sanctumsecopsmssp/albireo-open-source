@@ -1,16 +1,20 @@
 SHELL := /usr/bin/env bash
-.PHONY: validate preflight deploy dry-run verify rollback uninstall
+.PHONY: validate preflight deploy dry-run verify rollback uninstall types type
 validate:
-	./scripts/validate.sh
+	bash ./scripts/validate.sh
 preflight:
-	./scripts/preflight.sh
+	bash ./scripts/preflight.sh
 deploy:
-	./scripts/deploy-compose.sh
+	bash ./scripts/deploy-compose.sh
 dry-run:
-	./scripts/deploy-compose.sh --dry-run
+	bash ./scripts/deploy-compose.sh --dry-run
 verify:
-	./scripts/verify-deployment.sh
+	bash ./scripts/verify-deployment.sh
 rollback:
-	./scripts/rollback-compose.sh
+	bash ./scripts/rollback-compose.sh
 uninstall:
-	./scripts/uninstall-compose.sh
+	bash ./scripts/uninstall-compose.sh
+types:
+	@echo standalone responder gateway-tun airgap-verifier anchor-worker ha-verifier
+type:
+	@bash ./scripts/deployment-type.sh "$(TYPE)"

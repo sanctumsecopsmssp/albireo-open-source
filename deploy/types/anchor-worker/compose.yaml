@@ -1,0 +1,25 @@
+services:
+  anchor-worker:
+    image: ${ALBIREO_IMAGE:?set ALBIREO_IMAGE to an immutable image digest}
+    user: "65532:65532"
+    command: ["anchor-worker", "--config", "/etc/albireo/albireo.yaml"]
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: [/tmp:rw,noexec,nosuid,nodev,size=64m,uid=65532,gid=65532,mode=0700]
+    volumes:
+      - ../../../config/albireo.yaml:/etc/albireo/albireo.yaml:ro
+      - ./secrets:/run/secrets/albireo:ro
+      - anchor-queue:/var/lib/albireo
+    healthcheck:
+      test: ["CMD", "albireo", "healthcheck", "--url", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks: [anchor-egress]
+networks:
+  anchor-egress: {driver: bridge}
+volumes:
+  anchor-queue:

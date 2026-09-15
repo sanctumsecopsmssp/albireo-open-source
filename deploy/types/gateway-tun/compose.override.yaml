@@ -1,0 +1,10 @@
+# Dedicated Linux host only. Requires separate routing and threat review.
+services:
+  albireo:
+    command: ["serve", "--mode", "gateway", "--config", "/etc/albireo/albireo.yaml"]
+    cap_add: ["NET_ADMIN"]
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    sysctls:
+      net.ipv4.conf.all.rp_filter: "1"
+    security_opt: ["no-new-privileges:true"]

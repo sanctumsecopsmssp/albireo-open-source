@@ -1,0 +1,36 @@
+# Opt-in Linux TUN gateway. Review routes and capabilities before installation.
+[Unit]
+Description=Albireo experimental TUN gateway
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=albireo
+Group=albireo
+ExecStart=/usr/local/bin/albireo serve --mode gateway --config /etc/albireo/albireo.yaml
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=45
+UMask=0077
+NoNewPrivileges=true
+AmbientCapabilities=CAP_NET_ADMIN
+CapabilityBoundingSet=CAP_NET_ADMIN
+DeviceAllow=/dev/net/tun rw
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/albireo
+ReadOnlyPaths=/etc/albireo
+StateDirectory=albireo
+StateDirectoryMode=0700
+
+[Install]
+WantedBy=multi-user.target

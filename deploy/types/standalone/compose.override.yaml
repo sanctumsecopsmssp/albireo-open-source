@@ -1,0 +1,5 @@
+services:
+  albireo:
+    command: ["serve", "--mode", "standalone", "--config", "/etc/albireo/albireo.yaml"]
+    deploy:
+      replicas: 1

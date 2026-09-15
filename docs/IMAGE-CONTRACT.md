@@ -2,14 +2,28 @@
 
 This is a release contract, not a claim that an image currently implements it.
 
+## Common contract
+
 - Image runs as UID/GID 65532 by default and requires no root filesystem writes.
-- Entrypoint accepts `serve --config /etc/albireo/albireo.yaml`; `version`; and `healthcheck --url <url>`.
 - Configuration is read from `/etc/albireo/albireo.yaml`; secrets are referenced by file path under `/run/secrets/albireo`.
 - Persistent state is confined to `/var/lib/albireo`; temporary files use `/tmp`.
-- UDP peer transport defaults to port 9500/udp. Health and readiness HTTP default to 8080/tcp and bind to loopback or the pod interface according to deployment. Metrics default disabled.
-- `GET /health` reports process liveness only. `GET /ready` returns 200 only when mandatory identity, policy, state, and required dependencies are usable; otherwise it returns a non-2xx status with no secret material.
-- Logs use structured stdout/stderr, UTC timestamps, stable event identifiers, and no keys, tokens, raw evidence, personal data, or reversible tenant identifiers.
-- SIGTERM stops new work, drains bounded in-flight work, persists required state, and exits before the orchestrator grace period. Exit 0 means clean stop; nonzero means failure.
-- `albireo version` prints semantic version, commit, build time, protocol version, and enabled feature names without secret values.
-- Public-chain support submits only approved commitments. RPC failure must queue or reject safely, never downgrade verification or expose raw evidence.
-- The baseline image requires no privileged mode, host namespaces, Docker socket, host networking, or Linux capabilities. TUN mode is outside this baseline and requires a separately reviewed package.
+- `GET /health` reports process liveness only. `GET /ready` returns 200 only when mandatory identity, policy, state, and required dependencies are usable.
+- Logs use structured stdout/stderr, UTC timestamps, stable event identifiers, and contain no keys, tokens, raw evidence, personal data, CUI, or reversible tenant identifiers.
+- SIGTERM stops new work, drains bounded in-flight work, persists required state, and exits before the orchestrator grace period.
+- `albireo version` prints semantic version, commit, build time, protocol version, and enabled features without secret values.
+
+## Runtime commands
+
+- `serve --mode standalone|responder|gateway --config PATH` runs a node. Responder mode must not initiate peer sessions. Gateway mode must fail closed when TUN setup, route policy, or identity checks fail.
+- `verify --input DIR --output DIR --trust-bundle FILE` performs offline verification and must require no network.
+- `verifier-api --config PATH` runs a stateless verification API without node private keys.
+- `anchor-worker --config PATH` consumes only approved commitments from a bounded durable queue and submits them to configured RPC endpoints.
+- `healthcheck --url URL` returns nonzero unless the selected endpoint returns an accepted status.
+
+## Ports and privileges
+
+UDP peer transport defaults to 9500/udp. Health/readiness default to 8080/tcp. Metrics default disabled. Standalone and responder require no capabilities. The TUN gateway is the only profile permitted to request `NET_ADMIN` and `/dev/net/tun`; it must not use privileged mode, host PID, host IPC, the Docker socket, or unrestricted host networking.
+
+## Blockchain boundary
+
+Only approved commitments may leave through the anchor worker. RPC failure must queue or reject safely and must never downgrade verification, drop required evidence without an explicit error, or expose raw evidence.
