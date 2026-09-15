@@ -1,0 +1,28 @@
+# Secrets and credentials
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.seed
+*.token
+credentials*
+secrets*
+
+# Evidence and customer material
+evidence/private/
+customer-data/
+production/
+*.pcap
+*.pcapng
+
+# Builds and editors
+target/
+build/
+dist/
+.DS_Store
+.idea/
+.vscode/
