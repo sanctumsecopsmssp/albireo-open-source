@@ -1,4 +1,13 @@
 # Dedicated Linux host only. Requires separate routing and threat review.
+#
+# Compose appends list values from override files, so this profile must not
+# repeat security_opt, cap_drop, read_only, or tmpfs entries already declared in
+# deploy/compose/compose.yaml. The base file already sets
+# no-new-privileges:true, cap_drop ALL, and a read-only root filesystem.
+#
+# cap_add is additive on purpose: the gateway is the only profile permitted to
+# request NET_ADMIN and /dev/net/tun. Privileged mode, host namespaces, and the
+# Docker socket remain prohibited.
 services:
   albireo:
     command: ["serve", "--mode", "gateway", "--config", "/etc/albireo/albireo.yaml"]
@@ -7,4 +16,3 @@ services:
       - /dev/net/tun:/dev/net/tun
     sysctls:
       net.ipv4.conf.all.rp_filter: "1"
-    security_opt: ["no-new-privileges:true"]
