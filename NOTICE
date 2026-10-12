@@ -4,3 +4,9 @@ Copyright 2026 Sanctum SecOps LLC
 This product includes software developed by Sanctum SecOps LLC.
 
 Albireo, Sanctum QZT, Quantum Veil, Sanctum SecOps, and associated logos are trademarks or claimed marks of Sanctum SecOps LLC. The Apache License does not grant trademark rights.
+
+Scope: the Apache License 2.0 applies only to files in this repository that
+carry it. It does not license the ALBIREO core node, CLI, SDKs, verifier,
+conformance suite, test vectors, formal models, or any patent of Sanctum
+SecOps LLC beyond the limited patent grant in Section 3 of that license for
+the files actually contributed here. Patent pending.

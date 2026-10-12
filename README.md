@@ -4,13 +4,17 @@ Albireo is the open protocol and reference implementation boundary for an identi
 
 This public repository contains launch policy and a security-first deployment framework. It does **not** yet contain a reviewed production implementation or published OCI image. No private keys, customer data, CUI, internal topology, or production configuration belong here.
 
-## Planned public scope
+## Planned public scope (decision 2026-10-11: specification only)
 
-- Protocol and wire format.
-- Core node, CLI, SDKs, and local verifier.
-- Evidence schema, conformance tests, and test vectors.
-- Formal models and reproducibility artifacts.
-- Minimal deployment examples using synthetic configuration.
+- The ALBIREO protocol specification and wire-format description, published
+  under CC BY 4.0 **only after** the related patent filing and a recorded
+  pre-disclosure clearance.
+- Minimal deployment examples using synthetic configuration (already in this
+  repository).
+
+The core node, CLI, SDKs, local verifier, conformance suite, test vectors,
+formal models, and reproducibility artifacts are **proprietary to Sanctum
+SecOps LLC** and are not published or licensed by this repository.
 
 ## Deployment
 
@@ -24,7 +28,7 @@ make preflight
 
 ## Commercial boundary
 
-Sanctum SecOps may offer managed evidence verification, blockchain anchoring, retention, policy orchestration, enterprise connectors, dedicated validators, support, training, and regulated deployments. The open-source implementation will not require the hosted service. See `COMMERCIAL-BOUNDARY.md`.
+Sanctum SecOps may offer managed evidence verification, blockchain anchoring, retention, policy orchestration, enterprise connectors, dedicated validators, support, training, and regulated deployments. Independent implementations of the published specification will not require the hosted service. See `COMMERCIAL-BOUNDARY.md`.
 
 ## Status
 
@@ -32,4 +36,10 @@ Experimental planning and deployment-contract repository. Do not infer productio
 
 ## License
 
-Code is Apache-2.0 unless a file says otherwise. Specification prose may be released separately under CC BY 4.0 after counsel and provenance review. Trademarks are not licensed.
+- Files currently in this repository (deployment scaffolding, scripts, and
+  docs) are Apache-2.0 unless a file says otherwise.
+- The ALBIREO specification, when published, will be CC BY 4.0. Under CC BY 4.0
+  Section 2(b)(2), that license grants no patent or trademark rights.
+- The ALBIREO core node, CLI, SDKs, verifier, conformance suite, test vectors,
+  and formal models are proprietary to Sanctum SecOps LLC. Patent pending.
+- Trademarks are not licensed.
